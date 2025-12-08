@@ -1,26 +1,37 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import validator from "validator";
 const schema = new mongoose.Schema({
-    _id: { String, required: [true, "Please inter ID"] },
-    name: { String, required: [true, "Please inter name"] },
+    _id: { type: String, required: [true, "Please enter ID"] },
+    name: { type: String, required: [true, "Please enter name"] },
     email: {
-        String, unique: [true, "Email already exists"],
-        required: [true, "Please inter email"],
-        validate: validator.default.isEmail,
+        type: String,
+        unique: [true, "Email already exists"],
+        required: [true, "Please enter email"],
+        validate: validator.isEmail,
     },
-    photo: { String, required: [true, "Please add photo"] },
-    role: { String, enum: ["admin", "user"], default: "user", },
-    gender: { String, enum: ["male", "female"], required: [true, "Please inter Gender"] },
-    dob: { Date, required: [true, "Please inter Date of birth"] },
+    photo: { type: String, required: [true, "Please add photo"] },
+    role: { type: String, enum: ["admin", "user"], default: "user" },
+    gender: {
+        type: String,
+        enum: ["male", "female"],
+        required: [true, "Please enter gender"],
+    },
+    dob: {
+        type: Date,
+        required: [true, "Please enter date of birth"],
+    },
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 });
 schema.virtual("age").get(function () {
     const today = new Date();
     const dob = this.dob;
     let age = today.getFullYear() - dob.getFullYear();
-    if (today.getMonth() < dob.getMonth() || today.getMonth() === dob.getMonth()
-        && today.getDate() < dob.getDate()) {
+    if (today.getMonth() < dob.getMonth() ||
+        (today.getMonth() === dob.getMonth() &&
+            today.getDate() < dob.getDate())) {
         age--;
     }
     return age;

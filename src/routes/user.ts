@@ -1,9 +1,11 @@
 import express from "express"
+import { newUser } from "../controllers/user.js";
 
 
 const userRouter = express.Router();
 
-userRouter.get("/")
+userRouter.get("/new", newUser)
+
 
 
 

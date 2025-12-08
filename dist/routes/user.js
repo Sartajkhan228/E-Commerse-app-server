@@ -1,5 +1,6 @@
 import express from "express";
+import { newUser } from "../controllers/user.js";
 const userRouter = express.Router();
-userRouter.get("/");
+userRouter.get("/new", newUser);
 export default userRouter;
 //# sourceMappingURL=user.js.map
