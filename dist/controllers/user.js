@@ -1,7 +1,6 @@
 import { User } from "../models/user.js";
 export const newUser = async (req, res) => {
     try {
-        console.log("THIS IS API FOR CREATE USER");
         const { name, email, photo, gender, _id, dob } = req.body;
         if (!name?.trim() || !email?.trim() || !photo?.trim() || !gender?.trim() || !_id?.trim() || !dob) {
             return res.status(400).json({ success: false, message: "Please fill all details" });

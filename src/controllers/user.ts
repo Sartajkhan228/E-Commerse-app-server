@@ -6,7 +6,6 @@ import type { NewUserRequesBody } from "../types/type.js";
 export const newUser = async (req: Request<{}, {}, NewUserRequesBody>, res: Response) => {
 
     try {
-        console.log("THIS IS API FOR CREATE USER")
         const { name, email, photo, gender, _id, dob } = req.body;
 
         if (!name?.trim() || !email?.trim() || !photo?.trim() || !gender?.trim() || !_id?.trim() || !dob) {
