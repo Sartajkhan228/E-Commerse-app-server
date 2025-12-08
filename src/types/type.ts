@@ -7,3 +7,12 @@ export interface NewUserRequesBody {
     dob: Date;
 
 }
+
+export interface NewProductRequestBody {
+    name: string,
+    photo: string,
+    price: Number,
+    stock: Number,
+    category: string
+
+}

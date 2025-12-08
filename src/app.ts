@@ -2,6 +2,7 @@ import express from "express"
 import userRouter from "./routes/user.js";
 import { mongoDB } from "./utils/features.js";
 import dotenv from "dotenv"
+import productRouter from "./routes/product.js";
 
 dotenv.config()
 
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/product", productRouter)
 
 const port = 3000;
 

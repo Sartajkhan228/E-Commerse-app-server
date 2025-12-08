@@ -6,4 +6,11 @@ export interface NewUserRequesBody {
     _id: string;
     dob: Date;
 }
+export interface NewProductRequestBody {
+    name: string;
+    photo: string;
+    price: Number;
+    stock: Number;
+    category: string;
+}
 //# sourceMappingURL=type.d.ts.map
