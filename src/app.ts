@@ -17,7 +17,9 @@ app.get("/", (req, res) => {
 
 
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/product", productRouter)
+app.use("/api/v1/product", productRouter);
+
+app.use("/uploads", express.static("uploads"));
 
 const port = 3000;
 

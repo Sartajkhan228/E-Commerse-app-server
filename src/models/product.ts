@@ -7,7 +7,7 @@ const schema = new mongoose.Schema(
         photo: { type: String, required: [true, "Please set image"] },
         price: { type: Number, required: [true, "Please inter price"] },
         stock: { type: Number, required: [true, "Please inter stocks"] },
-        category: { type: String, required: [true, "Please inter category"] }
+        category: { type: String, required: [true, "Please inter category"], trim: true }
 
     },
     {

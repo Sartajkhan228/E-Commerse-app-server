@@ -10,6 +10,7 @@ export const createProduct = async (req, res) => {
             category: category.toLowerCase(),
             photo: photo?.path
         });
+        return res.status(201).json({ success: true, message: "Product created successfully" });
     }
     catch (error) {
         console.error("Error creating products", error);

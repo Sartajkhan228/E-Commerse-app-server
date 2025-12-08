@@ -17,6 +17,7 @@ export const createProduct = async (req: Request<{}, {}, NewProductRequestBody>,
             photo: photo?.path
         })
 
+        return res.status(201).json({ success: true, message: "Product created successfully" })
 
 
     } catch (error) {

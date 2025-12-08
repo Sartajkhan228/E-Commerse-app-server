@@ -4,6 +4,7 @@ import { singleUpload } from "../middlewares/multer.js";
 
 const productRouter = express.Router();
 
+// /api/v1/product
 
 productRouter.get("/all", singleUpload, createProduct)
 
