@@ -24,5 +24,5 @@ app.use("/uploads", express.static("uploads"));
 const port = 3000;
 
 app.listen(port, () => {
-    console.log(`Server is running at http://localhost${port}`)
+    console.log(`Server is running at http://localhost:${port}`)
 })
