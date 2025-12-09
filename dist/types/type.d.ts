@@ -13,4 +13,21 @@ export interface NewProductRequestBody {
     stock: Number;
     category: string;
 }
+export type SearchRequesQuery = {
+    search?: string;
+    price?: string;
+    category?: string;
+    sort?: string;
+    page?: string;
+};
+export interface BaseQuery {
+    name?: {
+        $regex: string;
+        $options: string;
+    };
+    price?: {
+        $lte: number;
+    };
+    category?: string;
+}
 //# sourceMappingURL=type.d.ts.map
