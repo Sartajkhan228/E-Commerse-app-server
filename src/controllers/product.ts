@@ -12,9 +12,6 @@ export const createProduct = async (req: Request<{}, {}, NewProductRequestBody>,
         const { name, price, stock, category } = req.body;
         const photo = req.file;
 
-        console.log(name, price, stock, category)
-        console.log(photo)
-
         if (!photo) {
             return res.status(400).json({ success: false, message: "Please add photo" })
         }
@@ -46,6 +43,7 @@ export const createProduct = async (req: Request<{}, {}, NewProductRequestBody>,
 }
 
 
+
 export const getLatestProducts = async (req: Request, res: Response) => {
 
     try {
@@ -62,5 +60,40 @@ export const getLatestProducts = async (req: Request, res: Response) => {
         console.error("Error getting latest products", error)
         res.status(400).json({ success: false, message: "Error getting latest products" })
     }
+}
 
+
+export const getCategories = async (req: Request, res: Response) => {
+
+    try {
+
+        const categories = await Product.distinct("category");
+
+        return res.status(200).json({
+            message: "success",
+            categories
+        })
+
+    } catch (error) {
+        console.error("Error getting categories", error)
+        res.status(400).json({ success: false, message: "Error getting categories" })
+    }
+}
+
+
+export const getAdminProducts = async (req: Request, res: Response) => {
+
+    try {
+
+        const product = await Product.find({});
+
+        return res.status(200).json({
+            message: "success",
+            product
+        })
+
+    } catch (error) {
+        console.error("Error getting admin products", error)
+        res.status(400).json({ success: false, message: "Error getting admin products" })
+    }
 }
