@@ -97,3 +97,100 @@ export const getAdminProducts = async (req: Request, res: Response) => {
         res.status(400).json({ success: false, message: "Error getting admin products" })
     }
 }
+
+
+export const getSingleProduct = async (req: Request, res: Response) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const product = await Product.findById(id);
+
+        console.log("PRODUCT GET", product)
+
+        return res.status(200).json({
+            message: "success",
+            product
+        })
+
+    } catch (error) {
+        console.error("Error getting single products", error)
+        res.status(400).json({ success: false, message: "Error getting single products" })
+    }
+}
+
+
+export const updateProduct = async (req: Request, res: Response) => {
+
+    try {
+
+        const { id } = req.params;
+        const { name, price, stock, category } = req.body;
+        const photo = req.file;
+
+        const product = await Product.findById(id);
+
+        console.log("PRODUCT UPDATE", product)
+
+
+        if (!product) return res.status(404).json({ success: false, message: "No product found with this id" });
+
+        if (photo) {
+            rm(product.photo!, () => {
+                console.log("Old photo deleted")
+            });
+            product.photo = photo.path;
+        }
+
+        if (name) product.name = name;
+        if (price) product.price = price;
+        if (stock) product.stock = stock;
+        if (category) product.category = category;
+
+        await product.save();
+
+        return res.status(201).json({
+            success: true,
+            messge: "Product updated successfully"
+        })
+
+    } catch (error) {
+        console.error("Error updating single products", error)
+        res.status(400).json({ success: false, message: "Error updating single products" })
+    }
+}
+
+
+export const deleteProduct = async (req: Request, res: Response) => {
+
+    try {
+        const { id } = req.params;
+
+        const product = await Product.findById(id);
+
+        console.log("PRODUCT DELETED", product)
+
+
+        if (!product) return res.status(401).json({
+            success: false,
+            message: "No product found"
+        });
+
+        rm(product.photo!, () => {
+            console.log("Product photo deleted");
+        })
+
+        await product.deleteOne();
+
+        return res.status(200).json({
+            success: true,
+            message: "Product deleted successfully"
+        })
+
+
+    } catch (error) {
+        console.error("Error deleting product", error)
+        res.status(400).json({ success: false, message: "Error deleting product" })
+    }
+}

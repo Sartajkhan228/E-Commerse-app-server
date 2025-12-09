@@ -4,4 +4,7 @@ export declare const createProduct: (req: Request<{}, {}, NewProductRequestBody>
 export declare const getLatestProducts: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const getCategories: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const getAdminProducts: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const getSingleProduct: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const updateProduct: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const deleteProduct: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 //# sourceMappingURL=product.d.ts.map
