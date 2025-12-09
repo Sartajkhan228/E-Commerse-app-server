@@ -1,5 +1,6 @@
 import { Product } from "../models/product.js";
 import { rm } from "fs";
+import { nodeCache } from "../app.js";
 export const createProduct = async (req, res) => {
     try {
         const { name, price, stock, category } = req.body;
@@ -29,7 +30,14 @@ export const createProduct = async (req, res) => {
 };
 export const getLatestProducts = async (req, res) => {
     try {
-        const product = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+        let product = [];
+        if (nodeCache.has("latest-products")) {
+            product = JSON.parse(nodeCache.get("latest-products"));
+        }
+        else {
+            product = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+            nodeCache.set("latest-products", JSON.stringify(product));
+        }
         return res.status(200).json({
             message: "success",
             product
@@ -42,7 +50,14 @@ export const getLatestProducts = async (req, res) => {
 };
 export const getCategories = async (req, res) => {
     try {
-        const categories = await Product.distinct("category");
+        let categories = [];
+        if (nodeCache.has("categories")) {
+            categories = JSON.parse(nodeCache.get("categories"));
+        }
+        else {
+            categories = await Product.distinct("category");
+            nodeCache.set("categories", JSON.stringify(categories));
+        }
         return res.status(200).json({
             message: "success",
             categories
@@ -55,7 +70,14 @@ export const getCategories = async (req, res) => {
 };
 export const getAdminProducts = async (req, res) => {
     try {
-        const product = await Product.find({});
+        let product = [];
+        if (nodeCache.has("products")) {
+            product = JSON.parse(nodeCache.get("products"));
+        }
+        else {
+            product = await Product.find({});
+            nodeCache.set("products", JSON.stringify(product));
+        }
         return res.status(200).json({
             message: "success",
             product
@@ -68,9 +90,15 @@ export const getAdminProducts = async (req, res) => {
 };
 export const getSingleProduct = async (req, res) => {
     try {
-        const { id } = req.params;
-        const product = await Product.findById(id);
-        console.log("PRODUCT GET", product);
+        let product = [];
+        const id = req.params.id;
+        if (nodeCache.has(`product-${id}`)) {
+            product = JSON.parse(nodeCache.get(`product-${id}`));
+        }
+        else {
+            product = await Product.findById(id);
+            nodeCache.set(`product-${id}`, JSON.stringify(product));
+        }
         return res.status(200).json({
             message: "success",
             product

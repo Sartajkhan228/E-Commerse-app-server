@@ -3,6 +3,7 @@ import userRouter from "./routes/user.js";
 import { mongoDB } from "./utils/features.js";
 import dotenv from "dotenv"
 import productRouter from "./routes/product.js";
+import NodeCache from "node-cache";
 
 dotenv.config()
 
@@ -10,6 +11,8 @@ const app = express();
 app.use(express.json());
 
 mongoDB()
+
+export const nodeCache = new NodeCache();
 
 app.get("/", (req, res) => {
     res.send(`<h1>Api routes are working</h1>`)

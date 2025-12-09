@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { BaseQuery, NewProductRequestBody, SearchRequesQuery } from "../types/type.js";
 import { Product } from "../models/product.js";
 import { rm } from "fs";
+import { nodeCache } from "../app.js";
 
 
 
@@ -43,18 +44,26 @@ export const createProduct = async (req: Request<{}, {}, NewProductRequestBody>,
 }
 
 
-
 export const getLatestProducts = async (req: Request, res: Response) => {
 
     try {
+        let product = [];
 
-        const product = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+        if (nodeCache.has("latest-products")) {
+            product = JSON.parse(nodeCache.get("latest-products")!)
+
+        } else {
+
+            product = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+
+            nodeCache.set("latest-products", JSON.stringify(product));
+
+        }
 
         return res.status(200).json({
             message: "success",
             product
         })
-
 
     } catch (error) {
         console.error("Error getting latest products", error)
@@ -67,7 +76,14 @@ export const getCategories = async (req: Request, res: Response) => {
 
     try {
 
-        const categories = await Product.distinct("category");
+        let categories = [];
+
+        if (nodeCache.has("categories")) {
+            categories = JSON.parse(nodeCache.get("categories")!)
+        } else {
+            categories = await Product.distinct("category");
+            nodeCache.set("categories", JSON.stringify(categories))
+        }
 
         return res.status(200).json({
             message: "success",
@@ -85,7 +101,14 @@ export const getAdminProducts = async (req: Request, res: Response) => {
 
     try {
 
-        const product = await Product.find({});
+        let product = [];
+
+        if (nodeCache.has("products")) {
+            product = JSON.parse(nodeCache.get("products")!)
+        } else {
+            product = await Product.find({});
+            nodeCache.set("products", JSON.stringify(product))
+        }
 
         return res.status(200).json({
             message: "success",
@@ -103,11 +126,15 @@ export const getSingleProduct = async (req: Request, res: Response) => {
 
     try {
 
-        const { id } = req.params;
+        let product = []
+        const id = req.params.id
 
-        const product = await Product.findById(id);
-
-        console.log("PRODUCT GET", product)
+        if (nodeCache.has(`product-${id}`)) {
+            product = JSON.parse(nodeCache.get(`product-${id}`)!)
+        } else {
+            product = await Product.findById(id);
+            nodeCache.set(`product-${id}`, JSON.stringify(product))
+        }
 
         return res.status(200).json({
             message: "success",
@@ -220,9 +247,7 @@ export const getSearchedProducts = async (req: Request<{}, {}, {}, SearchRequesQ
         if (category)
             baseQuery.category = category
 
-
         const productsPromise = Product.find(baseQuery).sort(sort && { price: sort === "asc" ? 1 : -1 }).limit(limit).skip(skip);
-
 
         const [products, filteredOnlyProducts] = await Promise.all([
             productsPromise,
