@@ -221,9 +221,21 @@ export const getSearchedProducts = async (req: Request<{}, {}, {}, SearchRequesQ
             baseQuery.category = category
 
 
+        const productsPromise = Product.find(baseQuery).sort(sort && { price: sort === "asc" ? 1 : -1 }).limit(limit).skip(skip);
 
-        const products = await Product.find(baseQuery).sort(sort && { price: sort === "asc" ? 1 : -1 }).limit(limit).skip(skip);
 
+        const [products, filteredOnlyProducts] = await Promise.all([
+            productsPromise,
+            Product.find(baseQuery)
+        ])
+
+        const totalPages = Math.ceil(filteredOnlyProducts.length / limit)
+
+        return res.status(200).json({
+            success: true,
+            products,
+            totalPages
+        })
 
     } catch (error) {
         console.error("Error getting searched products", error)

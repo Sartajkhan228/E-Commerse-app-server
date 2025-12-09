@@ -7,5 +7,5 @@ export declare const getAdminProducts: (req: Request, res: Response) => Promise<
 export declare const getSingleProduct: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const updateProduct: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const deleteProduct: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
-export declare const getSearchedProducts: (req: Request<{}, {}, {}, SearchRequesQuery>, res: Response) => Promise<void>;
+export declare const getSearchedProducts: (req: Request<{}, {}, {}, SearchRequesQuery>, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 //# sourceMappingURL=product.d.ts.map
