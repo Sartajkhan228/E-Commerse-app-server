@@ -1,33 +1,7 @@
 import { Product } from "../models/product.js";
 import { rm } from "fs";
 import { nodeCache } from "../app.js";
-export const createProduct = async (req, res) => {
-    try {
-        const { name, price, stock, category } = req.body;
-        const photo = req.file;
-        if (!photo) {
-            return res.status(400).json({ success: false, message: "Please add photo" });
-        }
-        if (!name || !price || !stock || !category) {
-            rm(photo.path, () => {
-                console.log("Deleted");
-            });
-            return res.status(400).json({ success: false, message: "Invalid inputs" });
-        }
-        await Product.create({
-            name,
-            price,
-            stock,
-            category: category.toLowerCase(),
-            photo: photo?.path
-        });
-        return res.status(201).json({ success: true, message: "Product created successfully" });
-    }
-    catch (error) {
-        console.error("Error creating products", error);
-        res.status(400).json({ success: false, message: "Error creating products" });
-    }
-};
+import { invalidateCache } from "../utils/features.js";
 export const getLatestProducts = async (req, res) => {
     try {
         let product = [];
@@ -97,6 +71,8 @@ export const getSingleProduct = async (req, res) => {
         }
         else {
             product = await Product.findById(id);
+            if (!product)
+                return res.status(404).json({ success: false, message: "Single product not found" });
             nodeCache.set(`product-${id}`, JSON.stringify(product));
         }
         return res.status(200).json({
@@ -105,8 +81,36 @@ export const getSingleProduct = async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Error getting single products", error);
-        res.status(400).json({ success: false, message: "Error getting single products" });
+        console.error("Error getting single product", error);
+        res.status(400).json({ success: false, message: "Error getting single product" });
+    }
+};
+export const createProduct = async (req, res) => {
+    try {
+        const { name, price, stock, category } = req.body;
+        const photo = req.file;
+        if (!photo) {
+            return res.status(400).json({ success: false, message: "Please add photo" });
+        }
+        if (!name || !price || !stock || !category) {
+            rm(photo.path, () => {
+                console.log("Deleted");
+            });
+            return res.status(400).json({ success: false, message: "Invalid inputs" });
+        }
+        await Product.create({
+            name,
+            price,
+            stock,
+            category: category.toLowerCase(),
+            photo: photo?.path
+        });
+        await invalidateCache({ product: true });
+        return res.status(201).json({ success: true, message: "Product created successfully" });
+    }
+    catch (error) {
+        console.error("Error creating products", error);
+        res.status(400).json({ success: false, message: "Error creating products" });
     }
 };
 export const updateProduct = async (req, res) => {
@@ -133,6 +137,7 @@ export const updateProduct = async (req, res) => {
         if (category)
             product.category = category;
         await product.save();
+        await invalidateCache({ product: true });
         return res.status(201).json({
             success: true,
             messge: "Product updated successfully"
@@ -157,6 +162,7 @@ export const deleteProduct = async (req, res) => {
             console.log("Product photo deleted");
         });
         await product.deleteOne();
+        await invalidateCache({ product: true });
         return res.status(200).json({
             success: true,
             message: "Product deleted successfully"

@@ -30,4 +30,9 @@ export interface BaseQuery {
     };
     category?: string;
 }
+export type InvalidateCacheProps = {
+    product?: boolean;
+    order?: boolean;
+    admin?: boolean;
+};
 //# sourceMappingURL=type.d.ts.map
