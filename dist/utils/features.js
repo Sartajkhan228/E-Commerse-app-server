@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Product } from "../models/product.js";
 import { nodeCache } from "../app.js";
+import { Order } from "../models/order.js";
 export const mongoDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGODB_URI);
@@ -11,7 +12,7 @@ export const mongoDB = async () => {
         process.exit(1);
     }
 };
-export const invalidateCache = async ({ product, order, admin }) => {
+export const invalidateCache = async ({ product, order, admin, userId }) => {
     if (product) {
         const productKeys = [
             "latest-products",
@@ -26,6 +27,14 @@ export const invalidateCache = async ({ product, order, admin }) => {
         nodeCache.del(productKeys);
     }
     ;
+    if (order) {
+        const orderKeys = ["all-orders", `my-orders-${userId}`];
+        const order = await Order.find({}).select("_id");
+        order.forEach((i) => {
+            orderKeys.push(`order-${i._id}`);
+        });
+        nodeCache.del(orderKeys);
+    }
 };
 export const reduceStock = async (orderItems) => {
     for (let i = 0; i < orderItems.length; i++) {
