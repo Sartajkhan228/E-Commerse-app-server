@@ -1,12 +1,16 @@
 
 
 import express from "express"
-import { newOrder } from "../controllers/oreder.js";
+import { newOrder, myOrders, allOrders } from "../controllers/oreder.js";
+import { singleUpload } from "../middlewares/multer.js";
+import { adminOnly } from "../middlewares/auth.js";
 
 const orderRouter = express.Router();
 
 // /api/v1/order
-orderRouter.post("/new", newOrder);
+orderRouter.post("/new", singleUpload, newOrder);
+orderRouter.get("/my", myOrders);
+orderRouter.get("/all", allOrders);
 
 
 

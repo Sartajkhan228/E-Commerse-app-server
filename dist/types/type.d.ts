@@ -50,7 +50,7 @@ export type ShippingInfoType = {
     pinCode: number;
 };
 export interface NewOrderRequestBody {
-    shippingInfo: {};
+    shippingInfo: ShippingInfoType;
     user: string;
     subtotal: number;
     tax: number;

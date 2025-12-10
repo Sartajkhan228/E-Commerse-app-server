@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 export declare const Order: mongoose.Model<{
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -36,12 +36,12 @@ export declare const Order: mongoose.Model<{
 } & mongoose.DefaultTimestampProps, {}, {}, {
     id: string;
 }, mongoose.Document<unknown, {}, {
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -74,12 +74,12 @@ export declare const Order: mongoose.Model<{
 }, {
     timestamps: true;
 }> & Omit<{
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -116,12 +116,12 @@ export declare const Order: mongoose.Model<{
 }, mongoose.Schema<any, mongoose.Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, {
     timestamps: true;
 }, {
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -150,12 +150,12 @@ export declare const Order: mongoose.Model<{
         pinCode: number;
     } | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -188,12 +188,12 @@ export declare const Order: mongoose.Model<{
 }, mongoose.ResolveSchemaOptions<{
     timestamps: true;
 }>> & Omit<{
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -231,12 +231,12 @@ export declare const Order: mongoose.Model<{
     [path: string]: mongoose.SchemaDefinitionProperty<undefined, any, any>;
 } | {
     [x: string]: mongoose.SchemaDefinitionProperty<any, any, mongoose.Document<unknown, {}, {
-        user: string;
+        user: mongoose.Types.ObjectId;
         subtotal: number;
         tax: number;
         shippingCharges: number;
         discount: number;
-        total: string;
+        total: number;
         status: "Processing" | "Shipped" | "Delivered";
         orderItems: mongoose.Types.DocumentArray<{
             name?: string | null;
@@ -269,12 +269,12 @@ export declare const Order: mongoose.Model<{
     }, mongoose.ResolveSchemaOptions<{
         timestamps: true;
     }>> & Omit<{
-        user: string;
+        user: mongoose.Types.ObjectId;
         subtotal: number;
         tax: number;
         shippingCharges: number;
         discount: number;
-        total: string;
+        total: number;
         status: "Processing" | "Shipped" | "Delivered";
         orderItems: mongoose.Types.DocumentArray<{
             name?: string | null;
@@ -310,12 +310,12 @@ export declare const Order: mongoose.Model<{
         id: string;
     }> | undefined;
 }, {
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
@@ -371,12 +371,12 @@ export declare const Order: mongoose.Model<{
 } & {
     __v: number;
 }>, {
-    user: string;
+    user: mongoose.Types.ObjectId;
     subtotal: number;
     tax: number;
     shippingCharges: number;
     discount: number;
-    total: string;
+    total: number;
     status: "Processing" | "Shipped" | "Delivered";
     orderItems: mongoose.Types.DocumentArray<{
         name?: string | null;
