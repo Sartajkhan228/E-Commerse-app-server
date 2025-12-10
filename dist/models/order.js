@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
             required: true
         }
     },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: String, ref: "User", required: true },
     subtotal: { type: Number, required: true },
     tax: { type: Number, required: true },
     shippingCharges: { type: Number, required: true },
