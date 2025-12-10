@@ -35,4 +35,28 @@ export type InvalidateCacheProps = {
     order?: boolean;
     admin?: boolean;
 };
+export type OrderItemType = {
+    name: string;
+    photo: string;
+    quantity: number;
+    price: number;
+    productId: string;
+};
+export type ShippingInfoType = {
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    pinCode: number;
+};
+export interface NewOrderRequestBody {
+    shippingInfo: {};
+    user: string;
+    subtotal: number;
+    tax: number;
+    shippingCharges: number;
+    discount: number;
+    total: number;
+    orderItems: OrderItemType[];
+}
 //# sourceMappingURL=type.d.ts.map

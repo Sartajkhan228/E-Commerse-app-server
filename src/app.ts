@@ -4,11 +4,14 @@ import { mongoDB } from "./utils/features.js";
 import dotenv from "dotenv"
 import productRouter from "./routes/product.js";
 import NodeCache from "node-cache";
+import orderRouter from "./routes/order.js";
+import morgan from "morgan";
 
 dotenv.config()
 
 const app = express();
 app.use(express.json());
+app.use(morgan("dev"));
 
 mongoDB()
 
@@ -21,10 +24,11 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/product", productRouter);
+app.use("/api/v1/order", orderRouter);
 
 app.use("/uploads", express.static("uploads"));
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`)

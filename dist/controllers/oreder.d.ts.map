@@ -1,1 +1,1 @@
-{"version":3,"file":"oreder.d.ts","sourceRoot":"","sources":["../../src/controllers/oreder.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAGjD,eAAO,MAAM,QAAQ,GAAU,KAAK,OAAO,EAAE,KAAK,QAAQ,kBAGzD,CAAA"}
+{"version":3,"file":"oreder.d.ts","sourceRoot":"","sources":["../../src/controllers/oreder.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAGjD,eAAO,MAAM,QAAQ,GAAU,KAAK,OAAO,CAAC,EAAE,EAAE,EAAE,CAAE,EAAE,KAAK,QAAQ,kBAGlE,CAAA"}
