@@ -28,7 +28,6 @@ export const invalidateCache = async ({ product, order, admin, userId, productId
             productKeys.push(`product=${productId}`);
         if (typeof productId === "object") {
             productId.forEach((i) => productKeys.push(`product-${i}`));
-            console.log("THE PRODUCTID PUSHED AS A OBJECT");
         }
         nodeCache.del(productKeys);
     }
