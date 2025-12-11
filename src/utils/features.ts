@@ -4,6 +4,8 @@ import { Product } from "../models/product.js";
 import { nodeCache } from "../app.js";
 import { Order } from "../models/order.js";
 
+
+
 export const mongoDB = async (): Promise<void> => {
     try {
 
@@ -17,19 +19,28 @@ export const mongoDB = async (): Promise<void> => {
 };
 
 
-export const invalidateCache = async ({ product, order, admin, userId }: InvalidateCacheProps) => {
+export const invalidateCache = async ({ product, order, admin, userId, productId }: InvalidateCacheProps) => {
 
     if (product) {
         const productKeys: string[] = [
             "latest-products",
             "categories",
             "products",
+
         ]
         // `product-${id}`
-        const product = await Product.find({}).select("_id");
-        product.forEach(element => {
-            productKeys.push(`product=${element._id}`)
-        });
+        // const product = await Product.find({}).select("_id");
+        // product.forEach(element => {
+        //     productKeys.push(`product=${element._id}`)
+        // });
+
+        if (typeof productId === "string")
+            productKeys.push(`product=${productId}`)
+
+        if (typeof productId === "object") {
+            productId.forEach((i) => productKeys.push(`product-${i}`))
+            console.log("THE PRODUCTID PUSHED AS A OBJECT")
+        }
 
         nodeCache.del(productKeys);
     };

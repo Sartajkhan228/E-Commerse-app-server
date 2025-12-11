@@ -12,7 +12,7 @@ export const mongoDB = async () => {
         process.exit(1);
     }
 };
-export const invalidateCache = async ({ product, order, admin, userId }) => {
+export const invalidateCache = async ({ product, order, admin, userId, productId }) => {
     if (product) {
         const productKeys = [
             "latest-products",
@@ -20,10 +20,16 @@ export const invalidateCache = async ({ product, order, admin, userId }) => {
             "products",
         ];
         // `product-${id}`
-        const product = await Product.find({}).select("_id");
-        product.forEach(element => {
-            productKeys.push(`product=${element._id}`);
-        });
+        // const product = await Product.find({}).select("_id");
+        // product.forEach(element => {
+        //     productKeys.push(`product=${element._id}`)
+        // });
+        if (typeof productId === "string")
+            productKeys.push(`product=${productId}`);
+        if (typeof productId === "object") {
+            productId.forEach((i) => productKeys.push(`product-${i}`));
+            console.log("THE PRODUCTID PUSHED AS A OBJECT");
+        }
         nodeCache.del(productKeys);
     }
     ;

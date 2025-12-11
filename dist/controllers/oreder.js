@@ -77,7 +77,7 @@ export const newOrder = async (req, res) => {
                 success: false,
                 message: "All fields required"
             });
-        await Order.create({
+        const order = await Order.create({
             shippingInfo,
             orderItems,
             user,
@@ -88,7 +88,7 @@ export const newOrder = async (req, res) => {
             total
         });
         await reduceStock(orderItems);
-        await invalidateCache({ product: true, order: true, admin: true, userId: user });
+        await invalidateCache({ product: true, order: true, admin: true, userId: user, productId: order.orderItems.map((i) => String(i.productId)) });
         return res.status(200).json({
             success: true,
             message: "Order placed successfully"
