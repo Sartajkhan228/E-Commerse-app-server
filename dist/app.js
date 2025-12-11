@@ -6,6 +6,7 @@ import productRouter from "./routes/product.js";
 import NodeCache from "node-cache";
 import orderRouter from "./routes/order.js";
 import morgan from "morgan";
+import paymentRouter from "./routes/payment.js";
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/product", productRouter);
 app.use("/api/v1/order", orderRouter);
+app.use("/api/v1/payment", paymentRouter);
 app.use("/uploads", express.static("uploads"));
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
