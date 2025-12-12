@@ -3,7 +3,7 @@ import { nodeCache } from "../app.js";
 import { Product } from "../models/product.js";
 import { User } from "../models/user.js";
 import { Order } from "../models/order.js";
-import { calculatePercentage } from "../utils/features.js";
+import { calculatePercentage, getBarsData } from "../utils/features.js";
 
 
 export const getDashboardStates = async (req: Request, res: Response) => {
@@ -11,9 +11,10 @@ export const getDashboardStates = async (req: Request, res: Response) => {
     try {
 
         let stats;
+        const key = "admin-stats"
 
-        if (nodeCache.has("admin-stats")) {
-            stats = JSON.parse(nodeCache.get("admin-stats")!)
+        if (nodeCache.has(key)) {
+            stats = JSON.parse(nodeCache.get(key)!)
         } else {
 
             const today = new Date();
@@ -156,13 +157,12 @@ export const getDashboardStates = async (req: Request, res: Response) => {
 
             lastSixMonthsOrders.forEach((order) => {
                 const creationDate = order.createdAt;
-                const monthDiff = today.getMonth() - creationDate.getMonth();
+                const monthDiff = (today.getMonth() - creationDate.getMonth()) % 12;
 
                 if (monthDiff < 6) {
                     orderMonthCounts[6 - monthDiff - 1] += 1;
                     orderMonthlyRevenue[6 - monthDiff - 1] += order.total;
                 }
-
             });
 
 
@@ -208,7 +208,7 @@ export const getDashboardStates = async (req: Request, res: Response) => {
                 latestTransaction: modifiedLatestTransactions
             }
 
-            nodeCache.set("admin-stats", JSON.stringify(stats))
+            nodeCache.set(key, JSON.stringify(stats))
         }
 
         res.status(200).json({
@@ -232,9 +232,10 @@ export const getDashboardPieChart = async (req: Request, res: Response) => {
     try {
 
         let pieChart;
+        const key = "admin-pie-charts"
 
-        if (nodeCache.has("admin-pie-charts")) {
-            pieChart = JSON.parse(nodeCache.get("admin-pie-charts")!)
+        if (nodeCache.has(key)) {
+            pieChart = JSON.parse(nodeCache.get(key)!)
         } else {
 
             const allOrdersPromise = Order.find({}).select(["total", "discount", "subtotal", "tax", "shippingCharges"])
@@ -264,7 +265,6 @@ export const getDashboardPieChart = async (req: Request, res: Response) => {
             ]);
 
             // console.log("ALLUSERS", allUsers[0]?.dob.toDateString())
-
 
             const orderFullFillment = {
                 processing: processingOrder,
@@ -342,7 +342,7 @@ export const getDashboardPieChart = async (req: Request, res: Response) => {
                 adminCustomer
             }
 
-            nodeCache.set("admin-pie-charts", JSON.stringify(pieChart))
+            nodeCache.set(key, JSON.stringify(pieChart))
         }
 
         return res.status(200).json({
@@ -355,6 +355,111 @@ export const getDashboardPieChart = async (req: Request, res: Response) => {
         res.status(400).json({
             success: false,
             message: "Error getting dashboard pie chart"
+        })
+    }
+};
+
+
+
+export const getDashboardBars = async (req: Request, res: Response) => {
+
+    try {
+
+        let bars;
+        const key = "admin-bars"
+
+        if (nodeCache.has(key)) {
+            bars = JSON.parse(nodeCache.get(key)!)
+        } else {
+            const today = new Date();
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+            const twelveMonthsAgo = new Date();
+            twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12)
+
+
+            const lastSixMonthsProductPromise = Product.find({
+                createdAt: {
+                    $gte: sixMonthsAgo,
+                    $lte: today
+                }
+            }).select("createdAt");
+            const lastSixMonthsUsersPromise = User.find({
+                createdAt: {
+                    $gte: sixMonthsAgo,
+                    $lte: today
+                }
+            }).select("createdAt");
+            const lastTwelveMonthesOrdersPromise = Order.find({
+                createdAt: {
+                    $gte: twelveMonthsAgo,
+                    $lte: today
+                }
+            }).select("createdAt");
+
+            const [
+                sixMonthProducts,
+                sixMonthUsers,
+                twelveMonthsOrders
+            ] = await Promise.all([
+                lastSixMonthsProductPromise,
+                lastSixMonthsUsersPromise,
+                lastTwelveMonthesOrdersPromise
+            ])
+
+
+            const productCounts = getBarsData({ length: 6, today, docArr: sixMonthProducts });
+            const userCounts = getBarsData({ length: 6, today, docArr: sixMonthUsers });
+            const orderCounts = getBarsData({ length: 12, today, docArr: twelveMonthsOrders })
+
+            bars = {
+                users: userCounts,
+                products: productCounts,
+                orders: orderCounts
+            }
+
+            nodeCache.set(key, JSON.stringify(bars));
+        }
+
+        return res.status(200).json({
+            success: false,
+            bars
+        })
+
+    } catch (error) {
+        console.error(error)
+        res.status(400).json({
+            success: false,
+            message: "Error getting dashboard bars"
+        })
+    }
+}
+
+
+export const getDashboardLine = async (req: Request, res: Response) => {
+
+    try {
+        let line;
+        const key = "line-chart"
+
+        if (nodeCache.has(key)) {
+            line = JSON.parse(nodeCache.get(key)!)
+        } else {
+
+
+            nodeCache.set(key, JSON.stringify(line))
+        }
+
+        return res.status(200).json({
+            success: true,
+            line
+        })
+
+    } catch (error) {
+        console.error(error)
+        res.status(400).json({
+            success: false,
+            message: "Error getting dashboard bars"
         })
     }
 }

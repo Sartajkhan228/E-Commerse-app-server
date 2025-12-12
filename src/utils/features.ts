@@ -77,8 +77,33 @@ export const calculatePercentage = (thisMonth: number, lastMonth: number) => {
         return 100;
     }
 
-    const percentage = ((thisMonth - lastMonth) / lastMonth) * 100
+    const percentage = (thisMonth / lastMonth) * 100
     console.log("PERCENTAGE", percentage)
 
     return percentage.toFixed(0);
+};
+
+interface myDocument extends Document {
+    createdAt: Date;
+}
+
+type funcProps = {
+    length: number,
+    docArr: myDocument[],
+    today: Date
+}
+
+export const getBarsData = ({ length, docArr, today }: funcProps) => {
+    const data: number[] = new Array(length).fill(0);
+
+    docArr.forEach((item) => {
+        const creationDate = item.createdAt;
+        const monthDiff = (today.getMonth() - creationDate.getMonth()) % 12;
+
+        if (monthDiff < length) {
+            data[length - monthDiff - 1] += 1;
+        }
+    });
+
+    return data;
 }

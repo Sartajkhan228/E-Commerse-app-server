@@ -1,5 +1,5 @@
 import express from "express";
-import { getDashboardStates, getDashboardPieChart } from "../controllers/stats.js";
+import { getDashboardStates, getDashboardPieChart, getDashboardBars, getDashboardLine } from "../controllers/stats.js";
 
 
 const dashboardRoutes = express.Router();
@@ -8,8 +8,8 @@ const dashboardRoutes = express.Router();
 
 dashboardRoutes.get("/stats", getDashboardStates);
 dashboardRoutes.get("/pie", getDashboardPieChart);
-// dashboardRoutes.get("/bar");
-// dashboardRoutes.get("/line");
+dashboardRoutes.get("/bar", getDashboardBars);
+dashboardRoutes.get("/line", getDashboardLine);
 
 
 export default dashboardRoutes;

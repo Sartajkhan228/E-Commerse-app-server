@@ -57,8 +57,19 @@ export const calculatePercentage = (thisMonth, lastMonth) => {
             return 0;
         return 100;
     }
-    const percentage = ((thisMonth - lastMonth) / lastMonth) * 100;
+    const percentage = (thisMonth / lastMonth) * 100;
     console.log("PERCENTAGE", percentage);
     return percentage.toFixed(0);
+};
+export const getBarsData = ({ length, docArr, today }) => {
+    const data = new Array(length).fill(0);
+    docArr.forEach((item) => {
+        const creationDate = item.createdAt;
+        const monthDiff = (today.getMonth() - creationDate.getMonth()) % 12;
+        if (monthDiff < length) {
+            data[length - monthDiff - 1] += 1;
+        }
+    });
+    return data;
 };
 //# sourceMappingURL=features.js.map
