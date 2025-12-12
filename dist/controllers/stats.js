@@ -65,7 +65,9 @@ export const getDashboardStates = async (req, res) => {
                     $lte: today
                 }
             });
-            const [thisMonthOrders, thisMonthProducts, thisMonthUsers, lastMonthOrders, lastMonthProducts, lastMonthUsers, productCount, userCount, allorders, lastSixMonthsOrders] = await Promise.all([
+            const latestTransactionsPromise = Order.find({})
+                .select(["orderItems", "discount", "total", "status"]).limit(4);
+            const [thisMonthOrders, thisMonthProducts, thisMonthUsers, lastMonthOrders, lastMonthProducts, lastMonthUsers, productCount, usersCount, allorders, lastSixMonthsOrders, categories, femalesCount, latestTransaction] = await Promise.all([
                 thisMonthOrderPromise,
                 thisMonthProductsPromise,
                 thisMonthUserPromise,
@@ -75,7 +77,10 @@ export const getDashboardStates = async (req, res) => {
                 Product.countDocuments(),
                 User.countDocuments(),
                 Order.find({}).select("total"),
-                lastSixMonthsOrdersPromise
+                lastSixMonthsOrdersPromise,
+                Product.distinct("category"),
+                User.countDocuments({ gender: "female" }),
+                latestTransactionsPromise
             ]);
             const thisMonthRevenue = thisMonthOrders.reduce((total, order) => total + (order.total || 0), 0);
             const lastMonthRevenue = lastMonthOrders.reduce((total, order) => total + (order.total || 0), 0);
@@ -89,15 +94,50 @@ export const getDashboardStates = async (req, res) => {
             const count = {
                 revenue,
                 product: productCount,
-                user: userCount,
+                user: usersCount,
                 order: allorders.length
             };
+            const orderMonthCounts = new Array(6).fill(0);
+            const orderMonthlyRevenue = new Array(6).fill(0);
             lastSixMonthsOrders.forEach((order) => {
+                const creationDate = order.createdAt;
+                const monthDiff = today.getMonth() - creationDate.getMonth();
+                if (monthDiff < 6) {
+                    orderMonthCounts[6 - monthDiff - 1] += 1;
+                    orderMonthlyRevenue[6 - monthDiff - 1] += order.total;
+                }
             });
-            stats = {
-                changePercentage,
-                count
+            const categoriesCountPromise = categories.map((category) => Product.countDocuments({ category }));
+            const categoriesCount = await Promise.all(categoriesCountPromise);
+            const categoryCount = [];
+            categories.forEach((category, index) => {
+                categoryCount.push({
+                    [category]: Math.round(categoriesCount[index] / productCount * 100)
+                });
+            });
+            const usersRatio = {
+                male: usersCount - femalesCount,
+                female: femalesCount
             };
+            const modifiedLatestTransactions = latestTransaction.map((item) => ({
+                _id: item._id,
+                discount: item.discount,
+                amount: item.total,
+                quantity: item.orderItems.length,
+                status: item.status
+            }));
+            stats = {
+                categoryCount,
+                changePercentage,
+                count,
+                chart: {
+                    order: orderMonthCounts,
+                    revenue: orderMonthlyRevenue
+                },
+                usersRatio,
+                latestTransaction: modifiedLatestTransactions
+            };
+            nodeCache.set("admin-stats", JSON.stringify(stats));
         }
         res.status(200).json({
             success: true,
@@ -109,6 +149,95 @@ export const getDashboardStates = async (req, res) => {
         res.status(400).json({
             success: false,
             message: "Error getting dashboard stats"
+        });
+    }
+};
+export const getDashboardPieChart = async (req, res) => {
+    try {
+        let pieChart;
+        if (nodeCache.has("admin-pie-charts")) {
+            pieChart = JSON.parse(nodeCache.get("admin-pie-charts"));
+        }
+        else {
+            const allOrdersPromise = Order.find({}).select(["total", "discount", "subtotal", "tax", "shippingCharges"]);
+            const [processingOrder, shippedOrder, deliveredOrder, categories, productCount, outOfStockProduct, allOrders, allUsers, adminUsers, customerUsers] = await Promise.all([
+                Order.countDocuments({ status: "Processing" }),
+                Order.countDocuments({ status: "Shipped" }),
+                Order.countDocuments({ status: "Delivered" }),
+                Product.distinct("category"),
+                Product.countDocuments(),
+                Product.countDocuments({ stock: 0 }),
+                allOrdersPromise,
+                User.find({}).select(["dob"]),
+                User.countDocuments({ role: "admin" }),
+                User.countDocuments({ role: "user" })
+            ]);
+            // console.log("ALLUSERS", allUsers[0]?.dob.toDateString())
+            const orderFullFillment = {
+                processing: processingOrder,
+                shipped: shippedOrder,
+                deliverd: deliveredOrder
+            };
+            const categoriesCountPromise = categories.map((category) => Product.countDocuments({ category }));
+            const categoriesCount = await Promise.all(categoriesCountPromise);
+            const categoryCount = [];
+            categories.map((category, index) => {
+                categoryCount.push({
+                    [category]: Math.round(categoriesCount[index] / productCount * 100)
+                });
+            });
+            const stockAvailability = {
+                inStock: productCount - outOfStockProduct,
+                outOfStock: outOfStockProduct
+            };
+            // const arr = [56, 77, 66]
+            // const result = arr.reduce((i, index) => (i + index), 0)
+            // console.log("RESULT", result)
+            const grossIncome = allOrders.reduce((prev, order) => prev + (order.total || 0), 0);
+            const discount = allOrders.reduce((prev, order) => prev + (order.discount || 0), 0);
+            const productionCost = allOrders.reduce((prev, order) => prev + (order.shippingCharges || 0), 0);
+            const burnt = allOrders.reduce((prev, order) => prev + (order.tax), 0);
+            const marketingCostPercentage = process.env.MARKETING_COST || 30;
+            const marketingCost = Math.round((grossIncome * marketingCostPercentage) / 100);
+            const netMargin = grossIncome - discount - productionCost - burnt - marketingCost;
+            const revenueDistribution = {
+                netMargin,
+                discount,
+                productionCost,
+                burnt,
+                marketingCost,
+                grossIncome
+            };
+            const userAgeGroup = {
+                teen: allUsers.filter((i) => i.age < 20).length,
+                adult: allUsers.filter((i) => i.age >= 20 && i.age <= 40).length,
+                old: allUsers.filter((i) => i.age > 40).length
+            };
+            const adminCustomer = {
+                admin: adminUsers,
+                customer: customerUsers
+            };
+            // sending data to frontend
+            pieChart = {
+                orderFullFillment,
+                categoryCount,
+                stockAvailability,
+                revenueDistribution,
+                userAgeGroup,
+                adminCustomer
+            };
+            nodeCache.set("admin-pie-charts", JSON.stringify(pieChart));
+        }
+        return res.status(200).json({
+            success: true,
+            pieChart
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            message: "Error getting dashboard pie chart"
         });
     }
 };
