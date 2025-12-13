@@ -142,7 +142,7 @@ export const createProduct = async (req: Request<{}, {}, NewProductRequestBody>,
             photo: photo?.path
         })
 
-        await invalidateCache({ product: true })
+        await invalidateCache({ product: true, admin: true })
 
         return res.status(201).json({ success: true, message: "Product created successfully" })
 
@@ -183,7 +183,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
         await product.save();
 
-        await invalidateCache({ product: true })
+        await invalidateCache({ product: true, admin: true })
 
         return res.status(201).json({
             success: true,
@@ -218,7 +218,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
         await product.deleteOne();
 
-        await invalidateCache({ product: true })
+        await invalidateCache({ product: true, admin: true })
 
         return res.status(200).json({
             success: true,

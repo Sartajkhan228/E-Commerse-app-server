@@ -54,6 +54,15 @@ export const invalidateCache = async ({ product, order, admin, userId, productId
         nodeCache.del(orderKeys)
     }
 
+    if (admin) {
+        nodeCache.del([
+            "admin-stats",
+            "admin-pie-charts",
+            "admin-bars",
+            "line-chart"
+        ])
+    }
+
 }
 
 
