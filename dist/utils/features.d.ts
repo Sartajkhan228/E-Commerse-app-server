@@ -5,12 +5,15 @@ export declare const reduceStock: (orderItems: OrderItemType[]) => Promise<void>
 export declare const calculatePercentage: (thisMonth: number, lastMonth: number) => string | 0 | 100;
 interface myDocument extends Document {
     createdAt: Date;
+    discount?: number;
+    total?: number;
 }
 type funcProps = {
     length: number;
     docArr: myDocument[];
     today: Date;
+    property?: "discount" | "total";
 };
-export declare const getBarsData: ({ length, docArr, today }: funcProps) => number[];
+export declare const getBarsData: ({ length, docArr, today, property }: funcProps) => number[];
 export {};
 //# sourceMappingURL=features.d.ts.map

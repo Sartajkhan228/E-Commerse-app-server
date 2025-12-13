@@ -445,10 +445,45 @@ export const getDashboardLine = async (req: Request, res: Response) => {
         if (nodeCache.has(key)) {
             line = JSON.parse(nodeCache.get(key)!)
         } else {
+            const today = new Date()
+            const twelveMonthsAgo = new Date();
+            twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12)
 
+
+            const baseQuery = {
+                createdAt: {
+                    $gte: twelveMonthsAgo,
+                    $lte: today
+                }
+            }
+
+            const [
+                product,
+                user,
+                order
+            ] = await Promise.all([
+                Product.find(baseQuery).select("createdAt"),
+                User.find(baseQuery).select("createdAt"),
+                Order.find(baseQuery).select(["createdAt", "discount", "total"])
+            ])
+
+            const productCount = getBarsData({ length: 12, today, docArr: product });
+            const userCount = getBarsData({ length: 12, today, docArr: user });
+
+            const discount = getBarsData({ length: 12, today, docArr: order, property: "discount" });
+            const revenue = getBarsData({ length: 12, today, docArr: order, property: "total" })
+
+
+            line = {
+                product: productCount,
+                user: userCount,
+                discount,
+                revenue
+            }
 
             nodeCache.set(key, JSON.stringify(line))
         }
+
 
         return res.status(200).json({
             success: true,
