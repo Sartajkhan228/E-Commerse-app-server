@@ -1,5 +1,36 @@
 import type { Request, Response } from "express";
 import { Coupon } from "../models/coupon.js";
+import { stripe } from "../app.js";
+
+
+export const createPaymentIntent = async (req: Request, res: Response) => {
+
+    try {
+
+        const { amount } = req.body;
+        if (!amount) return res.status(400).json({ success: false, message: "Please inter amount" })
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Number(amount) * 100,
+            currency: "inr"
+        })
+
+
+        return res.status(200).json({
+            success: true,
+            clientSecret: paymentIntent.client_secret,
+        })
+
+    } catch (error) {
+        console.error(error)
+        res.status(400).json({
+            success: false,
+            message: "Error creating stripe"
+        })
+    }
+
+};
+
 
 
 export const newCoupon = async (req: Request, res: Response) => {
@@ -33,7 +64,8 @@ export const newCoupon = async (req: Request, res: Response) => {
         })
 
     }
-}
+};
+
 
 
 export const applyDiscount = async (req: Request, res: Response) => {
@@ -63,7 +95,8 @@ export const applyDiscount = async (req: Request, res: Response) => {
             message: "Error getting discount"
         })
     }
-}
+}:
+
 
 
 export const allCoupons = async (req: Request, res: Response) => {
@@ -115,4 +148,4 @@ export const deleteCoupon = async (req: Request, res: Response) => {
             message: "Error deleting coupons"
         })
     }
-}
+};

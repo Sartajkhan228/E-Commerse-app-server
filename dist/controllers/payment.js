@@ -1,4 +1,27 @@
 import { Coupon } from "../models/coupon.js";
+import { stripe } from "../app.js";
+export const createPaymentIntent = async (req, res) => {
+    try {
+        const { amount } = req.body;
+        if (!amount)
+            return res.status(400).json({ success: false, message: "Please inter amount" });
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Number(amount) * 100,
+            currency: "inr"
+        });
+        return res.status(200).json({
+            success: true,
+            clientSecret: paymentIntent.client_secret,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            message: "Error creating stripe"
+        });
+    }
+};
 export const newCoupon = async (req, res) => {
     try {
         const { coupon, amount } = req.body;

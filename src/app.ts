@@ -2,6 +2,7 @@ import express from "express"
 import userRouter from "./routes/user.js";
 import { mongoDB } from "./utils/features.js";
 import dotenv from "dotenv"
+import Stripe from "stripe";
 import productRouter from "./routes/product.js";
 import NodeCache from "node-cache";
 import orderRouter from "./routes/order.js";
@@ -11,12 +12,16 @@ import dashboardRoutes from "./routes/stats.js";
 
 dotenv.config()
 
+const stripeKey = process.env.STRIP_SECRET_KEY || ""
+
 const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
 mongoDB()
 
+// payment and caching:
+export const stripe = new Stripe(stripeKey);
 export const nodeCache = new NodeCache();
 
 app.get("/", (req, res) => {
