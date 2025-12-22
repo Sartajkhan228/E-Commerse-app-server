@@ -52,6 +52,7 @@ export const applyDiscount = async (req, res) => {
     try {
         const { coupon } = req.query;
         const discount = await Coupon.findOne({ coupon });
+        console.log("discount", discount);
         if (!discount) {
             return res.status(400).json({
                 success: false,

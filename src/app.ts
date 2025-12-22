@@ -9,6 +9,7 @@ import orderRouter from "./routes/order.js";
 import morgan from "morgan";
 import paymentRouter from "./routes/payment.js";
 import dashboardRoutes from "./routes/stats.js";
+import cors from "cors"
 
 dotenv.config()
 
@@ -19,6 +20,12 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 mongoDB()
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+}))
 
 // payment and caching:
 export const stripe = new Stripe(stripeKey);
