@@ -53,9 +53,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
 
+    console.log("API FOR GETTING USER WITH ID IN SERVER CONTROLLER")
     try {
+        console.log("API FOR GETTING USER WITH ID IN SERVER CONTROLLER")
+
 
         const { id } = req.params;
+        console.log("ID", id)
 
         const user = await User.findById(id)
 

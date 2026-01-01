@@ -33,8 +33,11 @@ export const getAllUsers = async (req, res) => {
     }
 };
 export const getUser = async (req, res) => {
+    console.log("API FOR GETTING USER WITH ID IN SERVER CONTROLLER");
     try {
+        console.log("API FOR GETTING USER WITH ID IN SERVER CONTROLLER");
         const { id } = req.params;
+        console.log("ID", id);
         const user = await User.findById(id);
         if (!user)
             return res.status(400).json({ success: false, message: "Invalid id" });

@@ -96,7 +96,7 @@ export const applyDiscount = async (req: Request, res: Response) => {
             message: "Error getting discount"
         })
     }
-}:
+};
 
 
 
