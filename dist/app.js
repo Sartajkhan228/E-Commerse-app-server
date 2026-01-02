@@ -10,10 +10,12 @@ import morgan from "morgan";
 import paymentRouter from "./routes/payment.js";
 import dashboardRoutes from "./routes/stats.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 dotenv.config();
 const stripeKey = process.env.STRIP_SECRET_KEY || "";
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
 mongoDB();
 app.use(cors({

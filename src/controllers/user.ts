@@ -62,6 +62,7 @@ export const getUser = async (req: Request, res: Response) => {
         console.log("ID", id)
 
         const user = await User.findById(id)
+        console.log("USER", user)
 
         if (!user) return res.status(400).json({ success: false, message: "Invalid id" });
 
