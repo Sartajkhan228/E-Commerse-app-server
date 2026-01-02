@@ -92,11 +92,17 @@ export const calculatePercentage = (thisMonth: number, lastMonth: number) => {
     return percentage.toFixed(0);
 };
 
-interface myDocument extends Document {
+// interface myDocument extends Document {
+//     createdAt: Date;
+//     discount?: number;
+//     total?: number;
+
+// }
+
+interface myDocument {
     createdAt: Date;
     discount?: number;
     total?: number;
-
 }
 
 type funcProps = {
@@ -111,10 +117,12 @@ export const getBarsData = ({ length, docArr, today, property }: funcProps) => {
 
     docArr.forEach((item) => {
         const creationDate = item.createdAt;
-        const monthDiff = (today.getMonth() - creationDate.getMonth()) % 12;
+        const monthDiff = (today.getMonth() - creationDate.getMonth()) % 12 +
+            (today.getMonth() - creationDate.getMonth());
+        console.log("MONTHDIFF", monthDiff)
 
-        if (monthDiff < length) {
-            data[length - monthDiff - 1] += property ? item[property]! : 1;
+        if (monthDiff >= 0 && monthDiff < length) {
+            data[length - monthDiff - 1] += property ? item[property] ?? 0 : 1;
         }
     });
 
