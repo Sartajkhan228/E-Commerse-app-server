@@ -8,7 +8,7 @@ productRouter.post("/all", adminOnly, singleUpload, createProduct);
 productRouter.get("/latest", getLatestProducts);
 productRouter.get("/search", getSearchedProducts);
 productRouter.get("/categories", getCategories);
-productRouter.get("/admin-products", adminOnly, getAdminProducts);
+productRouter.get("/admin-products", /*adminOnly,*/ getAdminProducts);
 productRouter.route("/:id")
     .get(getSingleProduct)
     .put(adminOnly, singleUpload, updateProduct)

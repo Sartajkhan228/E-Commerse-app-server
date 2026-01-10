@@ -15,6 +15,8 @@ export const adminOnly = async (req: Request, res: Response, next: NextFunction)
 
         const user = await User.findById(id);
 
+
+
         // const user = req.user;
 
         // if (!user) return res.status(400).json({ success: false, message: "No user found with this id" });

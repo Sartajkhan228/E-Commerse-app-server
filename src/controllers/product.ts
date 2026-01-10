@@ -65,6 +65,7 @@ export const getAdminProducts = async (req: Request, res: Response) => {
     try {
 
         let product = [];
+        console.log("FETCHING ADMIN PRODUCT CONTROLLER", product)
 
         if (nodeCache.has("products")) {
             product = JSON.parse(nodeCache.get("products")!)

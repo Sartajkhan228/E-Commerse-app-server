@@ -45,6 +45,7 @@ export const getCategories = async (req, res) => {
 export const getAdminProducts = async (req, res) => {
     try {
         let product = [];
+        console.log("FETCHING ADMIN PRODUCT CONTROLLER", product);
         if (nodeCache.has("products")) {
             product = JSON.parse(nodeCache.get("products"));
         }
