@@ -265,7 +265,7 @@ export const getSearchedProducts = async (req: Request<{}, {}, {}, SearchRequesQ
             Product.find(baseQuery)
         ])
 
-        const totalPages = Math.ceil(filteredOnlyProducts.length / limit)
+        const totalPages = Math.ceil(filteredOnlyProducts.length / limit);
 
         return res.status(200).json({
             success: true,

@@ -4,7 +4,7 @@ import { singleUpload } from "../middlewares/multer.js";
 import { adminOnly } from "../middlewares/auth.js";
 const productRouter = express.Router();
 // /api/v1/product
-productRouter.post("/all", adminOnly, singleUpload, createProduct);
+productRouter.post("/all", singleUpload, createProduct);
 productRouter.get("/latest", getLatestProducts);
 productRouter.get("/search", getSearchedProducts);
 productRouter.get("/categories", getCategories);
